@@ -22,12 +22,8 @@ from sklearn.metrics import (
     confusion_matrix
 )
 
-def load_data():
-    path = "../data/processed/movies_clean.csv"
-    print("Chargement des donnees...")
-    df = pd.read_csv(path)
-    print("Shape:", df.shape)
-    return df
+from extraction.tmdb_api import load_data_v2
+from transformation.feature_engineering import split_data
 
 def create_target(df):
     print("Creation de la cible: ")
@@ -66,7 +62,7 @@ def prepare_data(df):
         print("OK: vote_count n'est pas utilise comme feature")
     return X, y
 
-def split_data(X, y):
+def split_train_test(X, y):
     print("Train / Test Split: ")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42, stratify=y)
     print("X_train:", X_train.shape)
@@ -75,7 +71,7 @@ def split_data(X, y):
     print("y_test:", y_test.shape)
     return X_train, X_test, y_train, y_test
 
-def create_preprocessor():
+def create_preprocessor(X):
     num_cols = [
         "runtime",
         "budget",
@@ -90,6 +86,7 @@ def create_preprocessor():
     cat_cols = [
         "original_language"
     ]
+    # num_cols, cat_cols = split_data(X)
     num_pipeline = Pipeline([
         ("imputer", SimpleImputer(strategy="median")),
         ("scaler", StandardScaler())
@@ -179,7 +176,6 @@ def create_results_dataframe(all_results):
     return results_df
 
 def plot_confusion_matrices(confusion_matrices, output_dir="../data/processed/figures"):
-
     os.makedirs(output_dir, exist_ok=True)
     for name, cm in confusion_matrices.items():
         plt.figure(figsize=(6, 5))
@@ -196,11 +192,12 @@ def plot_confusion_matrices(confusion_matrices, output_dir="../data/processed/fi
 
 def main():
     print("CLASSIFICATION - MOVIE INTELLIGENCE: ")
-    df = load_data()
+    path = "../data/processed/movies_clean.csv"
+    df = load_data_v2(path)
     df = create_target(df)
     X, y = prepare_data(df)
-    X_train, X_test, y_train, y_test = split_data(X, y)
-    preprocessor = create_preprocessor()
+    X_train, X_test, y_train, y_test = split_train_test(X, y)
+    preprocessor = create_preprocessor(X)
     models = create_models(preprocessor)
     models = train_models(models, X_train, y_train)
     all_results, confusion_matrices = evaluate_all_models(models, X_test, y_test)

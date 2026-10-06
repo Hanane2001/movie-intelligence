@@ -91,79 +91,11 @@ def Analyse_data(df):
     print("=== Describe ===")
     print(df.describe())
 
-def Nombre_duplicate(df):
-    res = df.duplicated().sum()
-    print("Nombre de doublons:", res)
-    if res > 0:
-        df = df.drop_duplicates()
-        print("doublons suprimes")
+def load_data_v2(path):
+    print("Chargement des donnees...")
+    df = pd.read_csv(path)
+    print("Shape:", df.shape)
     return df
-
-def feature(df):
-    df["annee"] = df["release_date"].dt.year
-    df["mois"] = df["release_date"].dt.month
-    df["decennie"] = pd.cut(df["release_date"].dt.year, bins=[1979, 2000, 2010, 2020, 2026], labels=["1980-2000", "2001-2010", "2011-2020", "2021-2026"])
-    # ou df["decennie"] = (((df["annee"] // 10) * 10).astype("Int64").astype(str) + "s")
-    df["nombre_genres"] = df["genres"].apply(
-        lambda x: len(x) if isinstance(x, list) else 0
-    )
-    df["nombre_keywords"] = df["keywords"].apply(
-        lambda x: len(x) if isinstance(x, list) else 0
-    )
-    df["category"] = pd.cut(df["runtime"], bins=[0, 90, 120, np.inf], labels=["Court", "Moyen", "Long"], include_lowest=True)
-    return df
-
-def fix_missing_val(df):
-    cols = ["budget", "revenue"]
-
-    for col in cols:
-        df[col] = df[col].replace(0, np.nan)
-        for period in df["decennie"].dropna().unique():
-            mask = df["decennie"] == period
-            median_val = df.loc[mask, col].median()
-            missing_mask = mask & df[col].isna()
-            missing_count = missing_mask.sum()
-            if missing_count > 0 and not pd.isna(median_val):
-                random_val = np.random.normal(loc=median_val, scale=median_val * 0.10, size=missing_count)
-                random_val = np.maximum(random_val, 0)
-                df.loc[missing_mask, col] = random_val
-            print(f"{col} | {period} | median = {median_val:.2f} | missing = {missing_count}")
-    return df
-
-def Nombre_Null(df):
-    res = df.isna().sum()
-    print("Valeurs nulles par colonne:")
-    print(res)
-    return df
-
-def split_data(df):
-    num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-    cat_cols = df.select_dtypes(include=["object"]).columns.tolist()
-    print(f"Colonnes numeriques: {len(num_cols)}")
-    print(f"{num_cols}")
-    print(f"Colonnes categorielles: {len(cat_cols)}")
-    print(f"{cat_cols}")
-    return num_cols, cat_cols
-
-def Nettoyage_data(df):
-    Analyse_data(df)
-    df = Nombre_duplicate(df)
-    df = Nombre_Null(df)
-    df["release_date"] = pd.to_datetime(df["release_date"], errors="coerce")
-    df["genres"] = df["genres"].apply(
-        lambda x: [g["name"] for g in x] if isinstance(x, list) else []
-    )
-    df = fix_missing_val(df)
-    num_cols, cat_cols = split_data(df)
-    return df
-
-def save_data_clean(df, out_dir="../data/processed"):
-    name = "movies_clean"
-    os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, f"{name}.csv")
-    df.to_csv(path, index=False)
-    print(f"data clean sauvgarde: {path}")
-
 
 if __name__ == "__main__":
     load_data(f"{BASE_URL}/discover/movie")
