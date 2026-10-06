@@ -30,10 +30,10 @@ def prepare_clustering_data(df):
 
 def standardize_data(X):
     scaler = StandardScaler()
-    x_scaled = scaler.fit_transform(X)
+    X_scaled = scaler.fit_transform(X)
     print("STANDARDISATION: ")
-    print(f"shape: {x_scaled.shape}")
-    return scaler, x_scaled
+    print(f"shape: {X_scaled.shape}")
+    return X_scaled, scaler
 
 def test_k_values(X_scaled, k_values=range(2, 8)):
     results = []
@@ -53,8 +53,8 @@ def test_k_values(X_scaled, k_values=range(2, 8)):
             "Silhouette": score
         })
         print(f"K: {k} | silhouette score: {score}")
-        res_df = pd.DataFrame(results)
-        return res_df
+    res_df = pd.DataFrame(results)
+    return res_df
 
 
 def select_best_k(res_df):
@@ -62,7 +62,7 @@ def select_best_k(res_df):
         res_df["Silhouette"].idxmax()
     ]
 
-    bk = int(br(["K"]))
+    bk = int(br["K"])
     bs = br["Silhouette"]
     print("MEILLEUR K: ")
     print("Meilleur K: ", bk)
@@ -128,7 +128,7 @@ def plot_silhouette(df, output_dir="../data/processed/figures"):
         data=df,
         x="K",
         y="Silhouette",
-        markers="o",
+        marker="o",
     )
     plt.title("Silhouette Score selon K")
     plt.xlabel("Nombre de clusters(K)")

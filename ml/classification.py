@@ -23,7 +23,7 @@ from sklearn.metrics import (
 )
 
 from extraction.tmdb_api import load_data_v2
-from transformation.feature_engineering import split_data
+# from transformation.feature_engineering import split_data
 
 def create_target(df):
     print("Creation de la cible: ")

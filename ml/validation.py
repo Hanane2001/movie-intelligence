@@ -36,7 +36,7 @@ def cross_validate_models(models, X, y):
             "ROC-AUC": scores["test_roc_auc"].mean()
         }
         resl.append(res)
-    res_df = pd.DataFrame(res)
+    res_df = pd.DataFrame(resl)
     print("RESULTATS CROSS VALIDATION: ")
     print(res_df.round(4))
     return res_df
@@ -49,9 +49,9 @@ def grid_search_random_forest(random_forest_model, X, y):
         random_state=42
     )
     param_grid = {
-        "model_n_estimators": [100, 200, 300, 500, 1000],
-        "model_max_depth": [None, 10, 20],
-        "model_min_samples_split": [2, 5]
+        "model__n_estimators": [100, 200, 300, 500, 1000],
+        "model__max_depth": [None, 10, 20],
+        "model__min_samples_split": [2, 5]
     }
     grid_search = GridSearchCV(
         estimator=random_forest_model,
