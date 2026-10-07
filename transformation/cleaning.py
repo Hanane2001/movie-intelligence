@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
-from extraction.tmdb_api import Analyse_data
+from extraction.tmdb_api import Analyse_data, load_data_v2
 
 def Nombre_Null(df):
     res = df.isna().sum()
@@ -27,6 +27,12 @@ def clean_genres(df):
     )
     return df
 
+def clean_keywords(df):
+    df["keywords"] = df["keywords"].apply(
+        lambda x: [g["name"] for g in x] if isinstance(x, list) else []
+    )
+    return df
+
 def fix_missing_val(df):
     cols = ["budget", "revenue"]
 
@@ -45,15 +51,15 @@ def fix_missing_val(df):
     return df
 
 def Nettoyage_data(df):
-    print("\n========== ANALYSE DES DONNEES ==========")
+    print("ANALYSE DES DONNEES: ")
     Analyse_data(df)
-    print("\n========== DOUBLONS ==========")
+    print("DOUBLONS: ")
     df = Nombre_duplicate(df)
-    print("\n========== VALEURS NULLLES ==========")
+    print("VALEURS NULLLES: ")
     df = Nombre_Null(df)
-    print("\n========== CONVERSION DES DATES ==========")
+    print("CONVERSION DES DATES: ")
     df = convert_dates(df)
-    print("\n========== NETTOYAGE DES GENRES ==========")
+    print("NETTOYAGE DES GENRES: ")
     df = clean_genres(df)
     return df
 
@@ -63,3 +69,9 @@ def save_data_clean(df, out_dir="../data/processed"):
     path = os.path.join(out_dir, f"{name}.csv")
     df.to_csv(path, index=False)
     print(f"data clean sauvgarde: {path}")
+
+def main_T():
+    destination = "../data/raw/movies_raw.json"
+    df = load_data_v2(destination)
+    data_clean = Nettoyage_data(df)
+    save_data_clean(data_clean)

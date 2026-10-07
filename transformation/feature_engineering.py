@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from extraction.tmdb_api import load_data_v3, Analyse_data
 
 def create_date_features(df):
     df["annee"] = df["release_date"].dt.year
@@ -34,12 +35,19 @@ def create_runtime_category(df):
     return df
 
 def feature(df):
-    print("\n========== FEATURES TEMPORELLES ==========")
+    print("FEATURES TEMPORELLES:")
     df = create_date_features(df)
-    print("\n========== FEATURES GENRES ==========")
+    print("FEATURES GENRES")
     df = create_genre_features(df)
-    print("\n========== FEATURES KEYWORDS ==========")
+    print("FEATURES KEYWORDS")
     df = create_keyword_features(df)
-    print("\n========== CATEGORIE DE DUREE ==========")
+    print("CATEGORIE DE DUREE")
     df = create_runtime_category(df)
     return df
+
+def main_FE():
+    source = "../data/processed/movies_clean.csv"
+    df = load_data_v3(source)
+    dt = feature(df)
+    Analyse_data(dt)
+    return dt

@@ -93,9 +93,20 @@ def Analyse_data(df):
 
 def load_data_v2(path):
     print("Chargement des donnees...")
+    data = pd.read_json(path)
+    df = pd.DataFrame(data)
+    # df = pd.read_csv(path)
+    # print("Shape:", df.shape)
+    return df
+
+def load_data_v3(path):
     df = pd.read_csv(path)
     print("Shape:", df.shape)
     return df
 
-if __name__ == "__main__":
-    load_data(f"{BASE_URL}/discover/movie")
+def main_E():
+    source = f"{BASE_URL}/discover/movie"
+    load_data(source)
+    destination = "../data/raw/movies_raw.json"
+    df = load_data_v2(destination)
+    Analyse_data(df)
