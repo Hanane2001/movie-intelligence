@@ -46,13 +46,12 @@ def experiment_tfidf(df):
         print(f"max_features={m} -> {X.shape}")
     print("Experimentation ngram_range: ")
     for ng in [(1, 1), (1, 2), (1, 3)]:
-        vec = TfidfVectorizer(max_features=5000, ngram_range=ng)
+        vec = TfidfVectorizer(max_features=5000, ngram_range=ng, stop_words="english")
         X = vec.fit_transform(df["overview_clean"])
         print(f"ngram_range={ng} -> {X.shape}")
 
 
 def main_TF_IDF():
-    # df = pd.read_csv("../data/processed/movies_clean.csv")
     path = "../data/features/movies_feature.csv"
     df = load_data_v3(path)
     print("Shape initiale: ", df.shape)

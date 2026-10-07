@@ -32,15 +32,30 @@ def load_data(url, total_movies=3000):
         movies = []
         page = 1
         while len(movies) < total_movies:
-            res = rq.get(url, params={"api_key": API_KEY, "page": page}, timeout=30)
+            params = {
+                "api_key": API_KEY,
+                "page": page,
+                "sort_by": "popularity.desc",
+                "vote_count.gte": 50,
+            }
+            res = rq.get(url, params=params, timeout=30)
             res.raise_for_status()
             data = res.json()
+
+            if not data.get("results"):
+                print("Plus de resultats disponibles")
+                break
 
             for movie in data["results"]:
 
                 movie_id = movie["id"]
-                details = get_movie_details(movie_id)
-                keywords = get_movie_keywords(movie_id)
+                try:
+                    details = get_movie_details(movie_id)
+                    keywords = get_movie_keywords(movie_id)
+                except rq.RequestException as e:
+                    print(f"Skip movie {movie_id}: {e}")
+                    continue
+
                 smv = {
                     "movie_id": movie_id,
                     "title": details.get("title"),
@@ -62,9 +77,9 @@ def load_data(url, total_movies=3000):
             print(f"Film recupere: {len(movies)}")
             page += 1
         movies = movies[:total_movies]
-        print("\nPremiers films:")
-        for movie in movies[:5]:
-            print(movie["movie_id"], "-", movie["title"])
+        # print("\nPremiers films:")
+        # for movie in movies[:5]:
+        #     print(movie["movie_id"], "-", movie["title"])
 
         with open(out, "w", encoding="utf-8") as f:
             json.dump(movies, f, ensure_ascii=False, indent=4)
@@ -72,7 +87,7 @@ def load_data(url, total_movies=3000):
         print("\nExtraction terminee")
         print(f"Saved file: {out}")
         print(f"Nombre de films: {len(movies)}")
-        print(f"Nombre demande: {total_movies}")
+        # print(f"Nombre demande: {total_movies}")
 
     except rq.Timeout:
         print("Erreur: timeout")
@@ -93,10 +108,9 @@ def Analyse_data(df):
 
 def load_data_v2(path):
     print("Chargement des donnees...")
-    data = pd.read_json(path)
-    df = pd.DataFrame(data)
-    # df = pd.read_csv(path)
-    # print("Shape:", df.shape)
+    df = pd.read_json(path, orient="records")
+    # df = pd.DataFrame(data)
+    print("Shape:", df.shape)
     return df
 
 def load_data_v3(path):
@@ -106,7 +120,7 @@ def load_data_v3(path):
 
 def main_E():
     source = f"{BASE_URL}/discover/movie"
-    load_data(source)
+    load_data(source, total_movies=3000)
     destination = "../data/raw/movies_raw.json"
     df = load_data_v2(destination)
     Analyse_data(df)

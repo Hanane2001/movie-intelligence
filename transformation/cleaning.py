@@ -1,7 +1,28 @@
 import pandas as pd
 import numpy as np
 import os
+import ast
 from extraction.tmdb_api import Analyse_data, load_data_v2
+
+def _parse_list_column(value):
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str):
+        try:
+            value = ast.literal_eval(value)
+        except (ValueError, SyntaxError):
+            return []
+    return value if isinstance(value, list) else []
+
+def extract(value):
+    value = _parse_list_column(value)
+    names = []
+    for g in value:
+        if isinstance(g, dict):
+            names.append(g.get("name"))
+        else:
+            names.append(g)
+    return [n for n in names if n]
 
 def Nombre_Null(df):
     res = df.isna().sum()
@@ -22,20 +43,25 @@ def convert_dates(df):
     return df
 
 def clean_genres(df):
-    df["genres"] = df["genres"].apply(
-        lambda x: [g["name"] for g in x] if isinstance(x, list) else []
-    )
+    # df["genres"] = df["genres"].apply(
+    #     lambda x: [g["name"] for g in x] if isinstance(x, list) else []
+    # )
+    df["genres"] = df["genres"].apply(extract)
     return df
 
 def clean_keywords(df):
-    df["keywords"] = df["keywords"].apply(
-        lambda x: [g["name"] for g in x] if isinstance(x, list) else []
-    )
+    # df["keywords"] = df["keywords"].apply(
+    #     lambda x: [g["name"] for g in x] if isinstance(x, list) else []
+    # )
+    df["keywords"] = df["keywords"].apply(extract)
     return df
 
 def fix_missing_val(df):
     cols = ["budget", "revenue"]
-
+    if "decennie" not in df.columns:
+        print("ATTENTION: 'decennie' absente, fix_missing_val ignoree")
+        return df
+    
     for col in cols:
         df[col] = df[col].replace(0, np.nan)
         for period in df["decennie"].dropna().unique():
@@ -61,6 +87,8 @@ def Nettoyage_data(df):
     df = convert_dates(df)
     print("NETTOYAGE DES GENRES: ")
     df = clean_genres(df)
+    print("NETTOYAGE DES KEYWORDS: ")
+    df = clean_keywords(df)
     return df
 
 def save_data_clean(df, out_dir="../data/processed"):
@@ -75,3 +103,4 @@ def main_T():
     df = load_data_v2(destination)
     data_clean = Nettoyage_data(df)
     save_data_clean(data_clean)
+    return data_clean

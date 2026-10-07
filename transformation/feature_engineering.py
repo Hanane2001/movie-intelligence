@@ -2,11 +2,12 @@ import os
 import pandas as pd
 import numpy as np
 from extraction.tmdb_api import load_data_v3, Analyse_data
+from transformation.cleaning import fix_missing_val, _parse_list_column
 
 def create_date_features(df):
     df["annee"] = df["release_date"].dt.year
     df["mois"] = df["release_date"].dt.month
-    df["decennie"] = pd.cut(df["release_date"].dt.year, bins=[1979, 2000, 2010, 2020, 2026], labels=["1980-2000", "2001-2010", "2011-2020", "2021-2026"])
+    df["decennie"] = pd.cut(df["release_date"].dt.year, bins=[0, 1979, 2000, 2010, 2020, 2030], labels=["<1980", "1980-2000", "2001-2010", "2011-2020", "2021-2030"], include_lowest=True)
     # ou df["decennie"] = (((df["annee"] // 10) * 10).astype("Int64").astype(str) + "s")
     return df
 
@@ -56,10 +57,11 @@ def feature(df):
 def main_FE():
     source = "../data/processed/movies_clean.csv"
     df = load_data_v3(source)
-    df["release_date"] = pd.to_datetime(
-        df["release_date"],
-        errors="coerce"
-    )
+    df["genres"] = df["genres"].apply(_parse_list_column)
+    df["keywords"] = df["keywords"].apply(_parse_list_column)
+    df["release_date"] = pd.to_datetime(df["release_date"], errors="coerce")
     dt = feature(df)
+    dt = fix_missing_val(dt)
     Analyse_data(dt)
     save_data_feature(dt)
+    return dt
