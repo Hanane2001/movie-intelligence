@@ -7,10 +7,14 @@ ENV/
 
 data/raw/*.csv
 data/processed/*.csv
+data/features/*.csv
+data/figures/*.png
 
 models/*.pkl
 models/*.joblib
 !models/.gitkeep
+
+notebooks/eda_figs/*.png
 
 .streamlit/secrets.toml
 

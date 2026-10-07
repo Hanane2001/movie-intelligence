@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 from extraction.tmdb_api import load_data_v3, Analyse_data
@@ -34,6 +35,13 @@ def create_runtime_category(df):
     df["category"] = pd.cut(df["runtime"], bins=[0, 90, 120, np.inf], labels=["Court", "Moyen", "Long"], include_lowest=True)
     return df
 
+def save_data_feature(df, out_dir="../data/features"):
+    name = "movies_feature"
+    os.makedirs(out_dir, exist_ok=True)
+    path = os.path.join(out_dir, f"{name}.csv")
+    df.to_csv(path, index=False)
+    print(f"data feature sauvgarde: {path}")
+
 def feature(df):
     print("FEATURES TEMPORELLES:")
     df = create_date_features(df)
@@ -48,6 +56,10 @@ def feature(df):
 def main_FE():
     source = "../data/processed/movies_clean.csv"
     df = load_data_v3(source)
+    df["release_date"] = pd.to_datetime(
+        df["release_date"],
+        errors="coerce"
+    )
     dt = feature(df)
     Analyse_data(dt)
-    return dt
+    save_data_feature(dt)

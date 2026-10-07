@@ -99,7 +99,7 @@ def interpret_clusters(df):
     print(cluster_mean.round(2))
     return cluster_mean
 
-def plot_clusters(df, output_dir="../data/processed/figures"):
+def plot_clusters(df, output_dir="../data/figures"):
     os.makedirs(output_dir, exist_ok=True)
     plt.figure(figsize=(10, 6))
     sns.scatterplot(
@@ -121,7 +121,7 @@ def plot_clusters(df, output_dir="../data/processed/figures"):
     plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.show()
 
-def plot_silhouette(df, output_dir="../data/processed/figures"):
+def plot_silhouette(df, output_dir="../data/figures"):
     os.makedirs(output_dir, exist_ok=True)
     plt.figure(figsize=(8, 5))
     sns.lineplot(
@@ -143,7 +143,7 @@ def plot_silhouette(df, output_dir="../data/processed/figures"):
 
 def main_CU():
     print("CLUSTERING - MOVIE INTELLIGENCE")
-    path = "../data/processed/movies_clean.csv"
+    path = "../data/features/movies_feature.csv"
     df = load_data_v3(path)
     X = prepare_clustering_data(df)
     X_scaled, scaler = standardize_data(X)

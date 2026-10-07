@@ -10,10 +10,10 @@ def Nombre_Null(df):
     return df
 
 def Nombre_duplicate(df):
-    res = df.duplicated().sum()
+    res = df["movie_id"].duplicated().sum()
     print("Nombre de doublons:", res)
     if res > 0:
-        df = df.drop_duplicates()
+        df = df.drop_duplicates(subset=["movie_id"])
         print("doublons suprimes")
     return df
 

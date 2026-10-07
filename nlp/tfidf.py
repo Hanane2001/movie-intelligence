@@ -18,8 +18,8 @@ def prepare_text(df):
     df["overview_clean"] = df["overview"].apply(clean_text)
     return df
 
-def create_tfidf(df, max_features=5000, ngram_range=(1, 2)):
-    vec = TfidfVectorizer(max_features=max_features, ngram_range=ngram_range)
+def create_tfidf(df, max_features=5000, ngram_range=(1, 2), stop_words="english"):
+    vec = TfidfVectorizer(max_features=max_features, ngram_range=ngram_range, stop_words=stop_words)
     X_tfidf = vec.fit_transform(df["overview_clean"])
     return X_tfidf, vec
 
@@ -36,12 +36,12 @@ def top_terms(X_tfidf, vec, n=20):
     ind = mean_scores.argsort()[::-1][:n]
     print(f"Top {n} termes representatifs: ")
     for i in ind:
-        print(f"{terms[i]:25s} \n {mean_scores[i]:.4f}")
+        print(f"{terms[i]:25s} -> {mean_scores[i]:.4f}")
 
 def experiment_tfidf(df):
     print("Experimentation max_features: ")
     for m in [1000, 3000, 5000, 10000]:
-        vec = TfidfVectorizer(max_features=m, ngram_range=(1, 1))
+        vec = TfidfVectorizer(max_features=m, ngram_range=(1, 1), stop_words="english")
         X = vec.fit_transform(df["overview_clean"])
         print(f"max_features={m} -> {X.shape}")
     print("Experimentation ngram_range: ")
@@ -53,10 +53,12 @@ def experiment_tfidf(df):
 
 def main_TF_IDF():
     # df = pd.read_csv("../data/processed/movies_clean.csv")
-    path = "../data/processed/movies_clean.csv"
+    path = "../data/features/movies_feature.csv"
     df = load_data_v3(path)
+    print("Shape initiale: ", df.shape)
     df = prepare_text(df)
-    X_tfidf, vectorizer = create_tfidf(df, max_features=5000, ngram_range=(1, 2))
+    print("Overviews vides: ", (df["overview_clean"] == "").sum())
+    X_tfidf, vectorizer = create_tfidf(df, max_features=5000, ngram_range=(1, 2), stop_words="english")
     analyze_tfidf(X_tfidf, vectorizer)
     top_terms(X_tfidf, vectorizer, n=20)
     experiment_tfidf(df)

@@ -54,10 +54,11 @@ def display_recommendations(title, recommendations_df):
 
 def main_R():
     print("RECOMMANDATION DE FILMS")
-    path = "../data/processed/movies_clean.csv"
+    path = "../data/features/movies_feature.csv"
     df = load_data_v3(path)
+    df = df.reset_index(drop=True)
     df = prepare_text(df)
-    tfidf_matrix, vectorizer = create_tfidf(df, max_features=5000, ngram_range=(1, 2))
+    tfidf_matrix, vectorizer = create_tfidf(df, max_features=5000, ngram_range=(1, 2), stop_words="english")
     similarity_matrix = calculate_similarity(tfidf_matrix)
     movie_title = input("\nEntrez le titre d'un film: ")
     recommendations = recommend_movies(movie_title, df, similarity_matrix, top_n=5)

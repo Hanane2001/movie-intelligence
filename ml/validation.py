@@ -6,7 +6,8 @@ from ml.classification import (
     prepare_data,
     split_train_test,
     create_preprocessor,
-    create_models
+    create_models,
+    evaluate_model
 )
 
 def cross_validate_models(models, X, y):
@@ -70,7 +71,7 @@ def grid_search_random_forest(random_forest_model, X, y):
 
 def main_V():
     print("VALIDATION ET OPTIMISATION")
-    path = "../data/processed/movies_clean.csv"
+    path = "../data/features/movies_feature.csv"
     df = load_data_v3(path)
     df = create_target(df)
     X, y = prepare_data(df)
@@ -80,7 +81,14 @@ def main_V():
     cv_results = cross_validate_models(models, X_train, y_train)
     random_forest_model = models["Random Forest"]
     grid_search = grid_search_random_forest(random_forest_model, X_train, y_train)
+    best_model = grid_search.best_estimator_
+    optimized_results, cm = evaluate_model(best_model, X_test, y_test)
+    print("\nRESULTATS DU RANDOM FOREST OPTIMISE:")
+    for metric, value in optimized_results.items():
+        print(f"{metric}: {value:.4f}")
+    print("\nMatrice de confusion:")
+    print(cm)
     print("VALIDATION ET OPTIMISATION TERMINEES")
-    return cv_results, grid_search
+    return cv_results, grid_search, optimized_results
 
 

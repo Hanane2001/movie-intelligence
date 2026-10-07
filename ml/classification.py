@@ -26,6 +26,7 @@ from extraction.tmdb_api import load_data_v3
 # from transformation.feature_engineering import split_data
 
 def create_target(df):
+    df = df.copy()
     print("Creation de la cible: ")
     threshold = df["vote_count"].median()
     print("Seuil choisi:", threshold)
@@ -175,7 +176,7 @@ def create_results_dataframe(all_results):
     print(results_df)
     return results_df
 
-def plot_confusion_matrices(confusion_matrices, output_dir="../data/processed/figures"):
+def plot_confusion_matrices(confusion_matrices, output_dir="../data/figures"):
     os.makedirs(output_dir, exist_ok=True)
     for name, cm in confusion_matrices.items():
         plt.figure(figsize=(6, 5))
@@ -192,7 +193,7 @@ def plot_confusion_matrices(confusion_matrices, output_dir="../data/processed/fi
 
 def main_CL():
     print("CLASSIFICATION - MOVIE INTELLIGENCE: ")
-    path = "../data/processed/movies_clean.csv"
+    path = "../data/features/movies_feature.csv"
     df = load_data_v3(path)
     df = create_target(df)
     X, y = prepare_data(df)
