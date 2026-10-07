@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-from extraction.tmdb_api import load_data_v2 
+from extraction.tmdb_api import load_data_v3 
 
 def clean_text(text):
     if pd.isna(text):
@@ -51,10 +51,10 @@ def experiment_tfidf(df):
         print(f"ngram_range={ng} -> {X.shape}")
 
 
-if __name__ == "__main__":
+def main_TF_IDF():
     # df = pd.read_csv("../data/processed/movies_clean.csv")
     path = "../data/processed/movies_clean.csv"
-    df = load_data_v2(path)
+    df = load_data_v3(path)
     df = prepare_text(df)
     X_tfidf, vectorizer = create_tfidf(df, max_features=5000, ngram_range=(1, 2))
     analyze_tfidf(X_tfidf, vectorizer)

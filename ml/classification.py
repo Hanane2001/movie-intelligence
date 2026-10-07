@@ -22,7 +22,7 @@ from sklearn.metrics import (
     confusion_matrix
 )
 
-from extraction.tmdb_api import load_data_v2
+from extraction.tmdb_api import load_data_v3
 # from transformation.feature_engineering import split_data
 
 def create_target(df):
@@ -190,10 +190,10 @@ def plot_confusion_matrices(confusion_matrices, output_dir="../data/processed/fi
         plt.show()
         print(f"Matrice sauvegardee: {path}")
 
-def main():
+def main_CL():
     print("CLASSIFICATION - MOVIE INTELLIGENCE: ")
     path = "../data/processed/movies_clean.csv"
-    df = load_data_v2(path)
+    df = load_data_v3(path)
     df = create_target(df)
     X, y = prepare_data(df)
     X_train, X_test, y_train, y_test = split_train_test(X, y)
@@ -205,6 +205,3 @@ def main():
     plot_confusion_matrices(confusion_matrices)
     print("CLASSIFICATION TERMINEE")
     return models, results_df
-
-if __name__ == "__main__":
-    models, results_df = main()

@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from mongodb.connection_db import connect_db
 
 # 1. DISTRIBUTION DES NOTES
 def plot_01_vote_avg(df, sp=None):
@@ -192,7 +191,3 @@ def run_eda(df, od="../notebooks/eda_figs"):
     print("Correlation")
     print(f"\nAll charts saved to: {os.path.abspath(od)}/")
     return df
-
-client, df, collection = connect_db()
-if __name__ == "__main__":
-    run_eda(df)

@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
-from extraction.tmdb_api import load_data_v2
+from extraction.tmdb_api import load_data_v3
 
 def prepare_clustering_data(df):
     features = [
@@ -141,10 +141,10 @@ def plot_silhouette(df, output_dir="../data/processed/figures"):
     plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.show()
 
-def main():
+def main_CU():
     print("CLUSTERING - MOVIE INTELLIGENCE")
     path = "../data/processed/movies_clean.csv"
-    df = load_data_v2(path)
+    df = load_data_v3(path)
     X = prepare_clustering_data(df)
     X_scaled, scaler = standardize_data(X)
     results_df = test_k_values(X_scaled, k_values=range(2, 8))
@@ -157,7 +157,3 @@ def main():
     plot_clusters(df_clustered)
     print("CLUSTERING TERMINE")
     return (df_clustered, results_df, cluster_means, kmeans, scaler)
-
-
-if __name__ == "__main__":
-    (df_clustered, results_df, cluster_means, kmeans, scaler) = main()

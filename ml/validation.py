@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import GridSearchCV, cross_validate, StratifiedKFold
-from extraction.tmdb_api import load_data_v2
+from extraction.tmdb_api import load_data_v3
 from ml.classification import (
     create_target,
     prepare_data,
@@ -68,10 +68,10 @@ def grid_search_random_forest(random_forest_model, X, y):
     print(f"{grid_search.best_score_:.4f}")
     return grid_search
 
-def main():
+def main_V():
     print("VALIDATION ET OPTIMISATION")
     path = "../data/processed/movies_clean.csv"
-    df = load_data_v2(path)
+    df = load_data_v3(path)
     df = create_target(df)
     X, y = prepare_data(df)
     X_train, X_test, y_train, y_test = split_train_test(X, y)
@@ -83,7 +83,4 @@ def main():
     print("VALIDATION ET OPTIMISATION TERMINEES")
     return cv_results, grid_search
 
-
-if __name__ == "__main__":
-    cv_results, grid_search = main()
 

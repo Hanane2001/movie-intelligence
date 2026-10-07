@@ -3,7 +3,7 @@ import numpy as np
 
 from sklearn.metrics.pairwise import cosine_similarity
 
-from extraction.tmdb_api import load_data_v2
+from extraction.tmdb_api import load_data_v3
 from nlp.tfidf import prepare_text, create_tfidf
 
 
@@ -52,10 +52,10 @@ def display_recommendations(title, recommendations_df):
         print(f"Similarité: {row['similarity_score']:.4f}")
 
 
-def main():
+def main_R():
     print("RECOMMANDATION DE FILMS")
     path = "../data/processed/movies_clean.csv"
-    df = load_data_v2(path)
+    df = load_data_v3(path)
     df = prepare_text(df)
     tfidf_matrix, vectorizer = create_tfidf(df, max_features=5000, ngram_range=(1, 2))
     similarity_matrix = calculate_similarity(tfidf_matrix)
@@ -63,7 +63,3 @@ def main():
     recommendations = recommend_movies(movie_title, df, similarity_matrix, top_n=5)
     display_recommendations(movie_title, recommendations)
     return (df, tfidf_matrix, similarity_matrix, recommendations)
-
-
-if __name__ == "__main__":
-    (df, tfidf_matrix, similarity_matrix, recommendations) = main()
