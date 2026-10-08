@@ -39,42 +39,25 @@ def test_k_values(X_scaled, k_values=range(2, 8)):
     results = []
     print("TEST DES VALEURS DE K: ")
     for k in k_values:
-        kmeans = KMeans(
-            n_clusters=k,
-            random_state=42,
-            n_init=10
-        )
+        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
         labels = kmeans.fit_predict(X_scaled)
-        score = silhouette_score(
-            X_scaled, labels
-        )
-        results.append({
-            "K": k,
-            "Silhouette": score
-        })
+        score = silhouette_score(X_scaled, labels)
+        results.append({"K": k, "Silhouette": score})
         print(f"K: {k} | silhouette score: {score}")
     res_df = pd.DataFrame(results)
     return res_df
 
 
 def select_best_k(res_df):
-    br = res_df.loc[
-        res_df["Silhouette"].idxmax()
-    ]
-
+    br = res_df.loc[res_df["Silhouette"].idxmax()]
     bk = int(br["K"])
     bs = br["Silhouette"]
-    print("MEILLEUR K: ")
     print("Meilleur K: ", bk)
     print(f"Meilleur Silhouette Score: {bs:.4f}")
     return bk
 
 def apply_kmeans(X_scaled, df, bk):
-    kmeans = KMeans(
-        n_clusters=bk,
-        random_state=42,
-        n_init=10
-    )
+    kmeans = KMeans(n_clusters=bk, random_state=42, n_init=10)
     labels = kmeans.fit_predict(X_scaled)
     df = df.copy()
     df["cluster"] = labels
@@ -102,42 +85,24 @@ def interpret_clusters(df):
 def plot_clusters(df, output_dir="../data/figures"):
     os.makedirs(output_dir, exist_ok=True)
     plt.figure(figsize=(10, 6))
-    sns.scatterplot(
-        data=df,
-        x="popularity",
-        y="vote_average",
-        hue="cluster",
-        palette="viridis",
-        s=60,
-    )
+    sns.scatterplot(data=df, x="popularity", y="vote_average", hue="cluster", palette="viridis", s=60)
     plt.title("Cluster de films")
-    plt.xlabel("Popularité")
+    plt.xlabel("Popularite")
     plt.ylabel("Note moyenne")
     plt.tight_layout()
-    path = os.path.join(
-        output_dir,
-        "clusters_movies.png"
-    )
+    path = os.path.join(output_dir, "clusters_movies.png")
     plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.show()
 
 def plot_silhouette(df, output_dir="../data/figures"):
     os.makedirs(output_dir, exist_ok=True)
     plt.figure(figsize=(8, 5))
-    sns.lineplot(
-        data=df,
-        x="K",
-        y="Silhouette",
-        marker="o",
-    )
+    sns.lineplot(data=df, x="K", y="Silhouette", marker="o")
     plt.title("Silhouette Score selon K")
     plt.xlabel("Nombre de clusters(K)")
     plt.ylabel("Silhouette Score")
     plt.tight_layout()
-    path = os.path.join(
-        output_dir,
-        "silhouette_score.png"
-    )
+    path = os.path.join(output_dir, "silhouette_score.png")
     plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.show()
 

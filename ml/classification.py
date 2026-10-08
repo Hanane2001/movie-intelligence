@@ -23,7 +23,6 @@ from sklearn.metrics import (
 )
 
 from extraction.tmdb_api import load_data_v3
-# from transformation.feature_engineering import split_data
 
 def create_target(df):
     df = df.copy()
@@ -180,9 +179,9 @@ def plot_confusion_matrices(confusion_matrices, output_dir="../data/figures"):
     os.makedirs(output_dir, exist_ok=True)
     for name, cm in confusion_matrices.items():
         plt.figure(figsize=(6, 5))
-        sns.heatmap(cm, annot=True, fmt="d", xticklabels=["Faible", "Élevé" ], yticklabels=["Faible", "Élevé" ])
-        plt.xlabel("Prédiction")
-        plt.ylabel("Valeur réelle")
+        sns.heatmap(cm, annot=True, fmt="d", xticklabels=["Faible", "Eleve" ], yticklabels=["Faible", "Eleve" ])
+        plt.xlabel("Prediction")
+        plt.ylabel("Valeur reelle")
         plt.title(f"Matrice de confusion - {name}")
         plt.tight_layout()
         filename = name.lower().replace(" ", "_").replace("-", "")

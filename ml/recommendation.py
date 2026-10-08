@@ -10,11 +10,12 @@ from nlp.tfidf import prepare_text, create_tfidf
 def calculate_similarity(tfidf_matrix):
     similarity_matrix = cosine_similarity(tfidf_matrix)
     print("SIMILARITE COSINUS: ")
-    print("Shape :", similarity_matrix.shape)
+    print("Shape: ", similarity_matrix.shape)
     return similarity_matrix
 
 
 def recommend_movies(title, df, similarity_matrix, top_n=5):
+    df = df.reset_index(drop=True)
     matches = df[df["title"].str.lower() == title.lower()]
     if matches.empty:
         print(f"\nFilm introuvable: {title}")
@@ -42,14 +43,14 @@ def recommend_movies(title, df, similarity_matrix, top_n=5):
 def display_recommendations(title, recommendations_df):
     print(f"\nRECOMMANDATIONS POUR: {title}")
     if recommendations_df.empty:
-        print("Aucune recommandation trouvée")
+        print("Aucune recommandation trouvee")
         return
 
     for i, row in recommendations_df.iterrows():
         print(f"\n{i + 1}. {row['title']}")
         print(f"Genre: {row['genres']}")
-        print(f"Année: {row['annee']}")
-        print(f"Similarité: {row['similarity_score']:.4f}")
+        print(f"Annee: {row['annee']}")
+        print(f"Similarite: {row['similarity_score']:.4f}")
 
 
 def main_R():

@@ -12,11 +12,7 @@ from ml.classification import (
 
 def cross_validate_models(models, X, y):
     print("CROSS VALIDATION: ")
-    cv = StratifiedKFold(
-        n_splits=5,
-        shuffle=True,
-        random_state=42
-    )
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     scoring = {
         "accuracy": "accuracy",
         "precision": "precision",
@@ -44,11 +40,7 @@ def cross_validate_models(models, X, y):
 
 def grid_search_random_forest(random_forest_model, X, y):
     print("GRID SEARCH - RANDOM FOREST")
-    cv = StratifiedKFold(
-        n_splits=5,
-        shuffle=True,
-        random_state=42
-    )
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     param_grid = {
         "model__n_estimators": [100, 200, 300, 500, 1000],
         "model__max_depth": [None, 10, 20],
